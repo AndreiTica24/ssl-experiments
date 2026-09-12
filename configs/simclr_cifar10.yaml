@@ -1,0 +1,46 @@
+# SimCLR pretraining config for CIFAR-10
+# Optimized for RTX 5070 Laptop (8GB VRAM)
+
+experiment:
+  name: "simclr_cifar10_baseline"
+  seed: 42
+  device: "cuda"
+
+data:
+  dataset: "cifar10"
+  data_dir: "./data"
+  image_size: 32
+  batch_size: 256          # 256 fits in 8GB with mixed precision
+  num_workers: 4
+
+model:
+  backbone: "resnet18"
+  projection_dim: 128
+  hidden_dim: 512
+
+training:
+  epochs: 200
+  optimizer: "adam"
+  learning_rate: 0.001
+  weight_decay: 1.0e-6
+  temperature: 0.5         # NT-Xent temperature
+  use_amp: true            # mixed precision (obligatoriu pentru 8GB)
+  
+scheduler:
+  type: "cosine"
+  warmup_epochs: 10
+
+checkpointing:
+  save_dir: "./checkpoints/simclr_cifar10"
+  save_every: 50           # save checkpoint every N epochs
+
+logging:
+  wandb_project: "ssl-experiments"
+  wandb_entity: null       # None = folosește default-ul contului tău
+  log_every: 50            # log training metrics every N iterations
+
+linear_eval:
+  epochs: 100
+  batch_size: 512
+  learning_rate: 0.01
+  weight_decay: 0.0
