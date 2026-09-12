@@ -101,3 +101,18 @@ class SimCLRModel(nn.Module):
             h: encoder features, shape (B, 512). Used for downstream tasks.
             z: projections, shape (B, projection_dim). Used for contrastive loss.
         """
+        h = self.encoder(x)
+        z = self.projection_head(h)
+        return h, z
+
+    def encode(self, x: torch.Tensor) -> torch.Tensor:
+        """Return only encoder features (for linear eval / inference)."""
+        return self.encoder(x)
+
+
+def build_simclr_model(config: dict) -> SimCLRModel:
+    """Build a SimCLR model from a config dict."""
+    return SimCLRModel(
+        projection_dim=config["model"]["projection_dim"],
+        hidden_dim=config["model"]["hidden_dim"],
+    )
